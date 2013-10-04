@@ -21,30 +21,28 @@ Crafty.c('Grid', {
 
 Crafty.c('Actor', {
   init: function(){
-    this.requires('2D, Canvas, Grid, Color');
+    this.requires('2D, Canvas, Grid');
   }
 });
 
 Crafty.c('Tree', {
   init: function() {
-    this.requires('Actor, Solid')
-        .color('rgb(20, 125, 40)');
+    this.requires('Actor, Solid, SprTree');
   },
 });
 
 Crafty.c('Bush', {
   init: function() {
-    this.requires('Actor, Solid')
-        .color('rgb(20, 185, 40)');
+    this.requires('Actor, Solid, SprBush');
   },
 });
 
 Crafty.c('Player', {
   init: function() {
-    this.requires('Actor, Fourway, Collision')
-        .color('rgb(200, 100, 40)')
+    this.requires('Actor, Fourway, Collision, Color')
         .fourway(4)
         .stopOnSolids()
+        .color("rgb(0, 0, 0)")
         .onHit('Village', this.visitVillage);
 
   },
@@ -70,8 +68,7 @@ Crafty.c('Player', {
 
 Crafty.c('Village', {
   init: function() {
-    this.requires('Actor')
-      .color('rgb(170, 125, 40)');
+    this.requires('Actor, SprVillage');
   },
  
   collect: function() {

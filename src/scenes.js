@@ -81,3 +81,20 @@ Crafty.scene('Victory', function() {
 }, function() {
 	this.unbind('KeyDown', this.restart_game);
 });
+
+Crafty.scene('Loading', function(){
+  Crafty.e('2D, DOM, Text')
+    .text('Loading...');
+    //.attr({ x: 0, y: Game.height()/2 - 24, w: Game.width() })
+    // .css($text_css);
+ 
+  Crafty.load(['assets/tileset.png'], function(){
+    Crafty.sprite(16, 'assets/tileset.png', {
+      SprTree:    [7, 10],
+      SprBush:    [8, 11],
+      SprVillage: [10, 1]
+    });
+ 
+    Crafty.scene('Game');
+  })
+});
