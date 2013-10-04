@@ -25,8 +25,8 @@ Game = {
 	start: function() {
 		// Start crafty and set a background color so that we can see it's working
 		Crafty.init(Game.width(), Game.height());
-	    Crafty.background('rgb(87, 109, 20)');
-		Crafty.scene('Loading');
+	    Crafty.background('rgb(100, 160, 20)');
+		Crafty.scene('Game');
 	}
 }
 
