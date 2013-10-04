@@ -56,14 +56,16 @@ Crafty.scene('Game', function(){
 	this.player = GameScene.place('Player', 5, 7);	
 	GameScene.placeObjects();
 
-	this.show_victory = this.bind('VillageVisited', function() {
+	this.show_victory = function() {
 		if (!Crafty('Village').length) {
 			Crafty.scene('Victory');
 		}
-	}, function() {
-		this.unbind('VillageVisited', this.show_victory);
-	});
+	};
 
+	this.bind('VillageVisited', this.show_victory);
+
+}, function() {
+	this.unbind('VillageVisited', this.show_victory);
 });
 
 Crafty.scene('Victory', function() {
@@ -71,9 +73,11 @@ Crafty.scene('Victory', function() {
 		.attr({ x: 0, y: 0 })
 		.text('Victory!');
 
-	this.restart_game = this.bind('KeyDown', function() {
+	this.restart_game = function() {
 		Crafty.scene('Game');
-	}, function() {
-		this.unbind('KeyDown', this.restart_game);
-	});
+	}
+
+	this.bind('KeyDown', this.restart_game);
+}, function() {
+	this.unbind('KeyDown', this.restart_game);
 });
