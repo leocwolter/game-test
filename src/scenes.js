@@ -1,6 +1,4 @@
 GameScene = {
-	//occupied: startOccupied(),
-
 	startOccupied: function(){
 		this.occupied = new Array(Game.map_grid.width);
 		for (var i = 0; i < Game.map_grid.width; i++) {
@@ -75,8 +73,7 @@ Crafty.scene('Victory', function() {
 
 	this.restart_game = this.bind('KeyDown', function() {
 		Crafty.scene('Game');
+	}, function() {
+		this.unbind('KeyDown', this.restart_game);
 	});
-}, function() {
-	console.log(this.restart_game);
-	this.unbind('KeyDown', this.restart_game);
 });
