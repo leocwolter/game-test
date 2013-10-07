@@ -38,8 +38,7 @@ Crafty.c('Player', {
         .twoway(4, 10)
         .stopOnSolids()
         .color("rgb(0, 0, 0)")
-        .gravity("Floor")
-        .onHit('Village', this.visitVillage);
+        .gravity("Floor");
 
   },
 
