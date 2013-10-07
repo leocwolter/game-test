@@ -19,7 +19,6 @@ GameScene = {
 		  for (var y = 0; y < Game.map_grid.height; y++) {
 		    var at_floor = y == Game.map_grid.height-1;
 		    if (at_floor) {
-				// Place a tree entity at the current tile
 				this.place('Floor', x, y);
 		    }
 		  }

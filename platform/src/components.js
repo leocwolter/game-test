@@ -28,20 +28,21 @@ Crafty.c('Actor', {
 Crafty.c('Floor', {
   init: function() {
     this.requires('Actor, Solid')
-      .color("rgb(0, 0, 0)");
+      .color("rgb(255, 255, 255)");
   },
 });
 
 Crafty.c('Player', {
   init: function() {
-    this.requires('Actor, Twoway, Collision, Color')
+    this.requires('Actor, Twoway, Collision, Color, Gravity')
         .twoway(4, 10)
         .stopOnSolids()
         .color("rgb(0, 0, 0)")
+        .gravity("Floor")
         .onHit('Village', this.visitVillage);
 
   },
-  
+
   stopOnSolids: function(){
     this.onHit('Solid', this.stopMovement);
     return this;
@@ -53,5 +54,5 @@ Crafty.c('Player', {
       this.x -= this._movement.x;
       this.y -= this._movement.y;
     }
-  }
+  },
 });
