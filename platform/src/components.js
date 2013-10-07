@@ -32,14 +32,46 @@ Crafty.c('Floor', {
   },
 });
 
-Crafty.c('Player', {
+Crafty.c('Boundary', {
   init: function() {
-    this.requires('Actor, Twoway, Collision, Color, Gravity')
+    this.requires('Actor, Solid')
+      .color("rgb(0,84,6)");
+  },
+});
+
+Crafty.c('Character', {
+  init: function() {
+    this.requires('Actor, Collision, Gravity')
+        .gravity("Floor");
+    
+  }
+});
+
+Crafty.c('Player', {
+  
+  health: 100,
+
+  init: function() {
+    this.requires('Twoway, Character')
         .twoway(4, 10)
         .stopOnSolids()
+        .damageOnEnemy()
         .color("rgb(0, 0, 0)")
-        .gravity("Floor");
 
+  },
+
+  damageOnEnemy: function(){
+    this.onHit('Enemy', function(){this.subtractHealth(), this.stopMovement()});
+    return this;
+  },
+
+  subtractHealth: function(){
+    this.health -= 1;
+    this.updateHealth();
+  },
+
+  updateHealth: function(){
+    document.getElementById('health-bar').style.width = this.health+"%";
   },
 
   stopOnSolids: function(){
@@ -54,4 +86,13 @@ Crafty.c('Player', {
       this.y -= this._movement.y;
     }
   },
+});
+
+Crafty.c('Enemy', {
+  init: function(){
+    this.requires('Character')
+        .gravity('Floor')
+        .color('rgb(100, 0, 0)')
+  }
+
 });

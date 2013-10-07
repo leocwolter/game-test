@@ -9,7 +9,13 @@ GameScene = {
 		GameScene.placeObjects();
 		Crafty.background('rgb(100, 160, 20)');
 		Crafty.scene('Game', GameScene.init);
+		
+	},
 
+	floor: function(){
+		return {
+			y: Game.map_grid.height-10
+		}
 	},
 
 	startOccupied: function(){
@@ -23,27 +29,35 @@ GameScene = {
 	},
 
 	placeObjects: function(){
-		GameScene.place('Player', 2, 10);
-		GameScene.placeFloor();
 		GameScene.placeBoundaries();
+		GameScene.placeFloor();
+		GameScene.place('Player', 2, 10);
+		GameScene.placeEnemies();
 	},
 
 	placeBoundaries: function(){
 		GameScene.walkIntoMapAndPlace(function(x, y){
 			var at_boundaries = (y == 0 || x == 0 || y == Game.map_grid.height-1 || x == Game.map_grid.width-1);
 			if(at_boundaries){
-				GameScene.place('Floor', x, y);
+				GameScene.place('Boundary', x, y);
 			}
 		});
 	},
 
 	placeFloor: function(){
-		// Place a tree at every edge square on our grid of 16x16 tiles
 		GameScene.walkIntoMapAndPlace(function(x, y){
-			var at_floor = y == Game.map_grid.height-10;
+			var at_floor = y == GameScene.floor().y;
 		    if (at_floor) {
 				GameScene.place('Floor', x, y);
 		    }
+		});
+	},
+
+	placeEnemies: function(){
+		var max = 1;
+		GameScene.walkIntoMapAndPlace(function(x, y){
+			var should_place_new_enemy = (x > Game.map_grid.width-20 && Crafty('Enemy').length < max && y < GameScene.floor().y)
+			if(should_place_new_enemy) GameScene.place('Enemy', x, y);
 		});
 	},
 
