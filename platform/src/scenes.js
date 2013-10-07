@@ -10,6 +10,7 @@ GameScene = {
 	},
 
 	placeObjects: function(){
+		GameScene.place('Player', 2, 10);
 		GameScene.placeFloor();
 	},
 
@@ -35,7 +36,6 @@ GameScene = {
 
 Crafty.scene('Game', function(){
 	GameScene.startOccupied();
-	this.player = GameScene.place('Player', 2, 10);	
 	GameScene.placeObjects();
 
 });
