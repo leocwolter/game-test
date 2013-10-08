@@ -2,6 +2,7 @@
 <html>
 <head>
   <script src="lib/crafty.js"></script>
+  <script src="src/default-actions.js"></script>
   <script src="src/components.js"></script>
   <script src="src/scenes.js"></script>
   <script src="src/game.js"></script>
@@ -9,19 +10,23 @@
     window.addEventListener('load', Game.start);
   </script>
   <style>
-  	*{
+    *{
       box-sizing: border-box;
     }
     body{
-  		background-color: #000;
+      background-color: #000;
       margin: 0 auto;
       margin-top: 10%;
       width: 100%;
-  	}
+    }
+
+    #health-bar{
+      text-align: center; 
+    }
   </style>
 </head>
 <body>
-<div id="health-bar" style="width: 100%; background-color: #D00; height: 20px;"></div>
+<div id="health-bar" style="width: 100%; background-color: #D00; height: 20px;">100%</div>
 
 </body>
 </html>

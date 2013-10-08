@@ -41,37 +41,23 @@ Crafty.c('Boundary', {
 
 Crafty.c('Character', {
   init: function() {
-    this.requires('Actor, Collision, Gravity')
-        .gravity("Floor");
+    this.requires('Actor, Collision, Gravity, Solid')
+        .gravity("Floor")
+        .repelCharacters()
+        .stopOnSolids();
     
-  }
-});
-
-Crafty.c('Player', {
-  
-  health: 100,
-
-  init: function() {
-    this.requires('Twoway, Character')
-        .twoway(4, 10)
-        .stopOnSolids()
-        .damageOnEnemy()
-        .color("rgb(0, 0, 0)")
-
   },
 
-  damageOnEnemy: function(){
-    this.onHit('Enemy', function(){this.subtractHealth(), this.stopMovement()});
+  repelCharacters: function(){
+    this.onHit('Character', function(data){
+        console.log(data);
+        console.log(this);
+        var touch = data[0].normal;
+        var direction = data[0].normal.x < 0 ? 'w' : 'e';
+        direction += touch.y < 0 ? 'n' : '';
+        this.move(direction, 100);
+    });
     return this;
-  },
-
-  subtractHealth: function(){
-    this.health -= 1;
-    this.updateHealth();
-  },
-
-  updateHealth: function(){
-    document.getElementById('health-bar').style.width = this.health+"%";
   },
 
   stopOnSolids: function(){
@@ -85,14 +71,51 @@ Crafty.c('Player', {
       this.x -= this._movement.x;
       this.y -= this._movement.y;
     }
-  },
+    return this;
+  }
 });
 
 Crafty.c('Enemy', {
   init: function(){
     this.requires('Character')
         .gravity('Floor')
-        .color('rgb(100, 0, 0)')
+        .color('rgb(100, 0, 0)');
+    setInterval(function(){
+        Crafty('Enemy').move('w', DefaultActions.movement.speed);
+    }, 50);
   }
-
 });
+
+Crafty.c('Player', {
+  
+  health: 100,
+
+  init: function() {
+    this.requires('Twoway, Character')
+        .twoway(DefaultActions.movement.speed, DefaultActions.movement.jump_power)
+        .damageOnEnemy()
+        .color("rgb(0, 0, 0)")
+
+  },
+
+  damageOnEnemy: function(){
+    this.onHit('Enemy', function(){
+      this.stopMovement()
+        .subtractHealth();
+    });
+    return this;
+  },
+
+  subtractHealth: function(){
+    this.health -= 1;
+    this.updateHealth();
+  },
+
+  updateHealth: function(){
+    var health_bar = document.getElementById('health-bar');
+    var quantity = this.health+"%";
+    health_bar.style.width = quantity;
+    health_bar.innerHTML = quantity;
+  }
+});
+
