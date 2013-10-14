@@ -51,13 +51,21 @@ Crafty.c('Follower', {
   follow: function(selector){
     this.bind('EnterFrame', function(){
       var who = Crafty(selector);
-      var xDirection = who.x - this.x > 0 ? 1 : -1;
-      var yDirection = who.y - this.y > 0 ? 1 : -1;
+      var xDirection = this.getDirection(who.x - this.x, DefaultActions.directions.right(), DefaultActions.directions.left());
+      var yDirection = this.getDirection(who.y - this.y, DefaultActions.directions.up(), DefaultActions.directions.down());
       if (!this.hit(selector)) {
-        this.x += DefaultActions.movement.enemy_speed * xDirection;
-        // this.y += DefaultActions.movement.enemy_speed * yDirection;
+        this.x += xDirection;
+        this.y += yDirection;
       } 
     });
+  },
+
+  getDirection: function(delta, greaterThanZero, lessThanZero){
+    if(delta > 0)
+      return greaterThanZero;
+    else if(delta < 0)
+      return lessThanZero;
+    return 0;
   }
 });
 
