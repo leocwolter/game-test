@@ -8,7 +8,6 @@ Crafty.c('Grid', {
     })
   },
 
-  // Locate this entity at the given position on the grid
   at: function(x, y) {
     if (x === undefined && y === undefined) {
       return { x: this.x/Game.map_grid.tile.width, y: this.y/Game.map_grid.tile.height }
@@ -37,7 +36,7 @@ Crafty.c('Actor', {
     this.onHit('Solid', function(hitdata){
       this._speed = 0;
       this.attr({x: this.x - this.direction[0] , y: this.y - this.direction[1]});
-      this.direction = [DefaultActions.movement.stopped(), DefaultActions.movement.stopped()];
+      this.direction = [0, 0];
     }, function(){
       this.direction = this.default_direction;
     });
@@ -68,8 +67,8 @@ Crafty.c('Follower', {
   follow: function(selector){
     this.bind('EnterFrame', function(){
       var who = Crafty(selector);
-      this.direction[0] = this.getDirection(who.x - this.x);
-      this.direction[1] = this.getDirection(who.y - this.y);
+      this.direction[0] = this.getDirection(who.x - this.x, this);
+      this.direction[1] = this.getDirection(who.y - this.y, this);
       if (!this.hit(selector)) {
         this.x += this.direction[0];
         this.y += this.direction[1];
@@ -77,13 +76,61 @@ Crafty.c('Follower', {
     });
   },
 
-  getDirection: function(delta){
+  getDirection: function(delta, self){
     if(delta > 0)
-      return DefaultActions.movement.right();
+      return self.direction_right();
     else if(delta < 0)
-      return DefaultActions.movement.left();
+      return self.direction_left();
     return 0;
   }
+});
+Crafty.c('Mobile', {
+  default_direction: [0, 0],
+
+  mobile: function(speed){
+    this.speed = speed;
+    return this;
+  },
+
+  step_horizontal: function(direction){
+    this.x += direction();
+    this.direction[0] = direction();
+  },
+
+  step_vertical: function(direction){
+    this.y += direction();
+    this.direction[1] = direction();
+  },
+
+  direction_left: function(){
+    return -this.speed; 
+  },
+
+  direction_right: function(){
+    return this.speed; 
+  }, 
+  
+  direction_up: function(){
+    return this.speed;
+  },
+
+  direction_down: function(){
+    return -this.speed;
+  },
+  
+  get_direction: function(){
+    var direction = [0, 0];
+    var self = this;
+    if(self._movement)
+     self.step_horizontal(function(){return self._movement.x});
+    if(self._up)
+      self.step_vertical(self.direction_up);
+    else if(self._down)
+      self.step_vertical(self.direction_down);
+    return direction;
+  }
+
+
 });
 
 Crafty.c('Character', {
@@ -91,15 +138,14 @@ Crafty.c('Character', {
     this.requires('Actor, Gravity, Solid')
         .gravity("Solid")
   },
-
 });
 
-Crafty.c('Enemy', {
-  default_direction: [DefaultActions.movement.left(), DefaultActions.movement.stopped()], 
+Crafty.c('Enemy', { 
   init: function(){
-    this.requires('Actor, Solid, Follower')
+    this.requires('Actor, Solid, Follower, Mobile')
         .stopOnSolids()
         .color('rgb(100, 0, 0)')
+        .mobile(DefaultActions.movement.enemy_speed)
         .follow('Player');
   },
 
@@ -108,16 +154,15 @@ Crafty.c('Enemy', {
 
 Crafty.c('Player', {
   health: 100,
-  default_direction: [DefaultActions.movement.stopped(), DefaultActions.movement.stopped()],
-
   init: function() {
-    this.requires('Twoway, Character')
+    this.requires('Twoway, Character, Mobile')
         .twoway(DefaultActions.movement.player_speed, DefaultActions.movement.jump_power)
         .damageOnEnemy()
         .stopOnSolids()
+        .mobile(DefaultActions.movement.player_speed)
         .color("rgb(0, 0, 0)")
         .bind('EnterFrame', function(){  
-          this.direction = DefaultActions.movement.get(this);
+          this.direction = this.get_direction();
         });
   },
 

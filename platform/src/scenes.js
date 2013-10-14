@@ -54,7 +54,7 @@ GameScene = {
 	},
 
 	placeEnemies: function(){
-		var max = 1;
+		var max = 5;
 		GameScene.walkIntoMapAndPlace(function(x, y){
 			var should_place_new_enemy = (x > Game.map_grid.width-20 && Crafty('Enemy').length < max && y < GameScene.floor().y)
 			if(should_place_new_enemy) GameScene.place('Enemy', x, y);
