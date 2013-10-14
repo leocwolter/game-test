@@ -30,6 +30,23 @@ Crafty.c('Solid', {
 Crafty.c('Actor', {
   init: function(){
     this.requires('2D, Canvas, Grid, Color');
+  },
+
+  stopOnSolids: function(){
+    if(!this.direction) this.setDefaultDirection();
+    this.onHit('Solid', function(hitdata){
+      this._speed = 0;
+      this.attr({x: this.x - this.direction[0] , y: this.y - this.direction[1]});
+      this.direction = [DefaultActions.movement.stopped(), DefaultActions.movement.stopped()];
+    }, function(){
+      this.direction = this.default_direction;
+    });
+    return this;
+  },
+
+  setDefaultDirection: function(){
+    this.direction = this.default_direction;
+    return this;
   }
 });
 
@@ -51,20 +68,20 @@ Crafty.c('Follower', {
   follow: function(selector){
     this.bind('EnterFrame', function(){
       var who = Crafty(selector);
-      var xDirection = this.getDirection(who.x - this.x, DefaultActions.directions.right(), DefaultActions.directions.left());
-      var yDirection = this.getDirection(who.y - this.y, DefaultActions.directions.up(), DefaultActions.directions.down());
+      this.direction[0] = this.getDirection(who.x - this.x);
+      this.direction[1] = this.getDirection(who.y - this.y);
       if (!this.hit(selector)) {
-        this.x += xDirection;
-        this.y += yDirection;
+        this.x += this.direction[0];
+        this.y += this.direction[1];
       } 
     });
   },
 
-  getDirection: function(delta, greaterThanZero, lessThanZero){
+  getDirection: function(delta){
     if(delta > 0)
-      return greaterThanZero;
+      return DefaultActions.movement.right();
     else if(delta < 0)
-      return lessThanZero;
+      return DefaultActions.movement.left();
     return 0;
   }
 });
@@ -73,43 +90,14 @@ Crafty.c('Character', {
   init: function() {
     this.requires('Actor, Gravity, Solid')
         .gravity("Solid")
-        .repelCharacters();
   },
-
-  setDefaultDirection: function(){
-    this.direction = this.default_direction;
-    return this;
-  },
-
-  stopOnSolids: function(){
-    if(!this.direction) this.setDefaultDirection();
-    this.onHit('Solid', function(hitdata){
-      this._speed = 0;
-      this.attr({x: this.x - this.direction[0] , y: this.y - this.direction[1]});
-      this.direction = [DefaultActions.directions.stopped(), DefaultActions.directions.stopped()];
-    }, function(){
-      this.direction = this.default_direction;
-    });
-    return this;
-  },
-
-  repelCharacters: function(){
-    this.onHit('Character', function(data){
-        var touch = data[0].normal;
-        var direction = data[0].normal.x < 0 ? 'w' : 'e';
-        direction += touch.y < 0 ? 'n' : '';
-        this.move(direction, 100);
-    });
-    return this;
-  }
 
 });
 
 Crafty.c('Enemy', {
-  default_direction: [DefaultActions.directions.left(), DefaultActions.directions.stopped()], 
-
+  default_direction: [DefaultActions.movement.left(), DefaultActions.movement.stopped()], 
   init: function(){
-    this.requires('Character, Follower')
+    this.requires('Actor, Solid, Follower')
         .stopOnSolids()
         .color('rgb(100, 0, 0)')
         .follow('Player');
@@ -120,7 +108,7 @@ Crafty.c('Enemy', {
 
 Crafty.c('Player', {
   health: 100,
-  default_direction: [DefaultActions.directions.stopped(), DefaultActions.directions.stopped()],
+  default_direction: [DefaultActions.movement.stopped(), DefaultActions.movement.stopped()],
 
   init: function() {
     this.requires('Twoway, Character')
@@ -129,7 +117,7 @@ Crafty.c('Player', {
         .stopOnSolids()
         .color("rgb(0, 0, 0)")
         .bind('EnterFrame', function(){  
-          this.direction = DefaultActions.directions.get(this);
+          this.direction = DefaultActions.movement.get(this);
         });
   },
 

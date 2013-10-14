@@ -3,8 +3,6 @@ DefaultActions = {
 		jump_power: 5,
 		enemy_speed: 2,
 		player_speed: 5,
-	},
-	directions: {
 		left: function(){
 			return -DefaultActions.movement.enemy_speed; 
 		},
@@ -21,14 +19,13 @@ DefaultActions = {
 			return 0;
 		},
 		get: function(entity){
-			var direction = [DefaultActions.directions.stopped(), DefaultActions.directions.stopped()];
+			var direction = [DefaultActions.movement.stopped(), DefaultActions.movement.stopped()];
 			if(entity._movement.x) direction[0] = entity._movement.x;
 			if(entity._up)
-				direction[1] = DefaultActions.directions.up();
+				direction[1] = DefaultActions.movement.up();
 			else if(entity._down)
-				direction[1] = DefaultActions.directions.down();
-
+				direction[1] = DefaultActions.movement.down();
 			return direction;
 		}
-	}
+	},
 }
