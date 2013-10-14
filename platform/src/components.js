@@ -54,8 +54,8 @@ Crafty.c('Follower', {
       var xDirection = who.x - this.x > 0 ? 1 : -1;
       var yDirection = who.y - this.y > 0 ? 1 : -1;
       if (!this.hit(selector)) {
-        this.x += DefaultActions.movement.speed * xDirection;
-        // this.y += DefaultActions.movement.speed * yDirection;
+        this.x += DefaultActions.movement.enemy_speed * xDirection;
+        // this.y += DefaultActions.movement.enemy_speed * yDirection;
       } 
     });
   }
@@ -65,8 +65,8 @@ Crafty.c('Character', {
   init: function() {
     this.requires('Actor, Gravity, Solid, Collision')
         .gravity("Solid")
-        .collision();
-        // .repelCharacters();
+        .collision()
+        .repelCharacters();
   },
 
   setDefaultDirection: function(){
@@ -117,7 +117,7 @@ Crafty.c('Player', {
 
   init: function() {
     this.requires('Twoway, Character')
-        .twoway(DefaultActions.movement.speed, DefaultActions.movement.jump_power)
+        .twoway(DefaultActions.movement.player_speed, DefaultActions.movement.jump_power)
         .damageOnEnemy()
         .stopOnSolids()
         .color("rgb(0, 0, 0)")

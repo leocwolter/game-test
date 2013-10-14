@@ -1,14 +1,15 @@
 DefaultActions = {
 	movement:{
 		jump_power: 5,
-		speed: 5,
+		enemy_speed: 2,
+		player_speed: 5,
 	},
 	directions: {
 		left: function(){
-			return -DefaultActions.movement.speed; 
+			return -DefaultActions.movement.enemy_speed; 
 		},
 		right: function(){
-			return DefaultActions.movement.speed; 
+			return DefaultActions.movement.enemy_speed; 
 		}, 
 		up: function(){
 			return DefaultActions.movement.jump_power;
