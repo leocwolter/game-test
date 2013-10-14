@@ -71,9 +71,8 @@ Crafty.c('Follower', {
 
 Crafty.c('Character', {
   init: function() {
-    this.requires('Actor, Gravity, Solid, Collision')
+    this.requires('Actor, Gravity, Solid')
         .gravity("Solid")
-        .collision()
         .repelCharacters();
   },
 
