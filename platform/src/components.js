@@ -19,6 +19,14 @@ Crafty.c('Grid', {
   }
 });
 
+Crafty.c('Solid', {
+  init: function(){
+    this.requires('Collision')
+        .collision();
+  }
+
+});
+
 Crafty.c('Actor', {
   init: function(){
     this.requires('2D, Canvas, Grid, Color');
@@ -41,11 +49,27 @@ Crafty.c('Boundary', {
 
 Crafty.c('Character', {
   init: function() {
-    this.requires('Actor, Collision, Gravity, Solid')
+    this.requires('Actor, Gravity, Solid, Collision')
         .gravity("Solid")
-        // .repelCharacters()
-        .stopOnSolids();
-    
+        .collision();
+        // .repelCharacters();
+  },
+
+  setDefaultDirection: function(){
+    this.direction = this.default_direction;
+    return this;
+  },
+
+  stopOnSolids: function(){
+    if(!this.direction) this.setDefaultDirection();
+    this.onHit('Solid', function(hitdata){
+      this._speed = 0;
+      this.attr({x: this.x - this.direction[0] , y: this.y - this.direction[1]});
+      this.direction = [DefaultActions.directions.stopped(), DefaultActions.directions.stopped()];
+    }, function(){
+      this.direction = this.default_direction;
+    });
+    return this;
   },
 
   repelCharacters: function(){
@@ -56,40 +80,39 @@ Crafty.c('Character', {
         this.move(direction, 100);
     });
     return this;
-  },
-
-  stopOnSolids: function(){
-    this.bind('Moved', function(from){
-      if(this.hit('2D')) {
-        this.attr({x: from.x, y: from.y});
-      }
-    });
-    return this;
   }
 
 });
 
 Crafty.c('Enemy', {
+  default_direction: [DefaultActions.directions.left(), DefaultActions.directions.stopped()], 
+
   init: function(){
     this.requires('Character')
-        .gravity('Floor')
+        .stopOnSolids()
         .color('rgb(100, 0, 0)');
-    // setInterval(function(){
-    //     Crafty('Enemy').move('w', DefaultActions.movement.speed);
-    // }, 50);
-  }
+    this.bind('EnterFrame', function(){
+      this.x += this.direction[0];
+      this.y += this.direction[1];
+    });
+  },
+
+
 });
 
 Crafty.c('Player', {
-  
   health: 100,
+  default_direction: [DefaultActions.directions.stopped(), DefaultActions.directions.stopped()],
 
   init: function() {
     this.requires('Twoway, Character')
         .twoway(DefaultActions.movement.speed, DefaultActions.movement.jump_power)
         .damageOnEnemy()
+        .stopOnSolids()
         .color("rgb(0, 0, 0)")
-
+        .bind('EnterFrame', function(){  
+          this.direction = DefaultActions.directions.get(this);
+        });
   },
 
   damageOnEnemy: function(){
@@ -110,5 +133,5 @@ Crafty.c('Player', {
     health_bar.style.width = quantity;
     health_bar.innerHTML = quantity;
   }
-});
 
+});
