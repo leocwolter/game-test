@@ -47,6 +47,20 @@ Crafty.c('Boundary', {
   },
 });
 
+Crafty.c('Follower', {
+  follow: function(selector){
+    this.bind('EnterFrame', function(){
+      var who = Crafty(selector);
+      var xDirection = who.x - this.x > 0 ? 1 : -1;
+      var yDirection = who.y - this.y > 0 ? 1 : -1;
+      if (!this.hit(selector)) {
+        this.x += DefaultActions.movement.speed * xDirection;
+        // this.y += DefaultActions.movement.speed * yDirection;
+      } 
+    });
+  }
+});
+
 Crafty.c('Character', {
   init: function() {
     this.requires('Actor, Gravity, Solid, Collision')
@@ -88,13 +102,10 @@ Crafty.c('Enemy', {
   default_direction: [DefaultActions.directions.left(), DefaultActions.directions.stopped()], 
 
   init: function(){
-    this.requires('Character')
+    this.requires('Character, Follower')
         .stopOnSolids()
-        .color('rgb(100, 0, 0)');
-    this.bind('EnterFrame', function(){
-      this.x += this.direction[0];
-      this.y += this.direction[1];
-    });
+        .color('rgb(100, 0, 0)')
+        .follow('Player');
   },
 
 
